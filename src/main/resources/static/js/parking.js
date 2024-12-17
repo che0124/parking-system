@@ -9,24 +9,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.getElementById("scooterParkButton").addEventListener("click", function () {
-    submitForm("/scooter");
+    submitForm("scooterParkingForm");
 });
 
 document.getElementById("carParkButton").addEventListener("click", function () {
-    submitForm("/car");
+    submitForm("carParkingForm");
 });
 
-function submitForm(action) {
-    var temp = "";
-    if(action == "/scooter") {
-        temp = "scooterParkingForm";
-    }else if(action == "/car") {
-        temp = "carParkingForm";
-    }
-
-    const form = document.getElementById(temp);
+function submitForm(formId) {
+    const form = document.getElementById(formId);
     const formData = new FormData(form);
-    fetch(action, {
+    fetch("/park", {
         method: "POST",
         body: formData
     })

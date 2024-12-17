@@ -17,16 +17,18 @@
             <form id="scooterParkingForm">
                 <h2>機車剩餘車位：<strong th:text="${availableScooterSlots}"></strong></h2>
                 <div class="form-group">
+                    <input type="hidden" id="scooterVehicleType" name="vehicleType" value="scooter">
                     <input class="inputLicensePlate" type="text" id="scooterLicensePlate" name="licensePlate"
                         placeholder="請輸入車牌..." required>
                 </div>
                 <button type="button" id="scooterParkButton">停車</button>
                 <p id="scooterMessage" th:text="${scooterMessage}" class="message"></p>
             </form>
-            <!-- 汽車表單 -->
+            <!-- 汽車表單 -->   
             <form id="carParkingForm">
                 <h2>汽車剩餘車位：<strong th:text="${availableCarSlots}"></strong></h2>
                 <div class="form-group">
+                    <input type="hidden" id="carVehicleType" name="vehicleType" value="car">
                     <input class="inputLicensePlate" type="text" id="carLicensePlate" name="licensePlate"
                         placeholder="請輸入車牌..." required>
                 </div>
@@ -39,7 +41,7 @@
     <div class="container selection">
         <!-- Vehicle Selection Section -->
         <div id="vehicleSelection">
-            <h1>選擇車輛種類</h1>
+            <h1>繳費-選擇車輛種類</h1>
             <div class="vehicle-buttons">
                 <button id="scooter-btn" onclick="selectVehicle('scooter')" class="vehicle-btn">
                     <img src="/asset/motorcycle.png" alt="機車圖示" loading="lazy"><br>

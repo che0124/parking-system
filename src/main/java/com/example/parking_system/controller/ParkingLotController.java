@@ -3,6 +3,7 @@ package com.example.parking_system.controller;
 import com.example.parking_system.model.Car;
 import com.example.parking_system.model.ParkingLot;
 import com.example.parking_system.model.Scooter;
+import com.example.parking_system.model.VehicleStatus;
 import com.example.parking_system.repository.CarRepository;
 import com.example.parking_system.repository.ScooterRepository;
 
@@ -37,50 +38,56 @@ public class ParkingLotController {
         return "index";
     }
 
-    @PostMapping("/scooter")
-    public String parkScooter(@RequestParam String licensePlate, Model model) {
+    @PostMapping("/park")
+    public String park(@RequestParam String vehicleType, @RequestParam String licensePlate, Model model) {
         if (licensePlate.isEmpty()) {
             model.addAttribute("message", "請輸入車牌號碼！");
             updateAvailableSlots(model);
             return "index";
         }
-        
-        if (scooterRepository.existsById(licensePlate)) {
-            model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已經停入車位");
-        } else {
-            long availableScooterSlots = ParkingLot.getTotalScooterSlots() - scooterRepository.count();
-            if (availableScooterSlots > 0) {
-                Scooter scooter = new Scooter(licensePlate);
-                scooterRepository.save(scooter);
-                model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已停入車位");
-            }else {
-                model.addAttribute("scooterMessage", "機車車位已滿！");
+
+        // Scooter
+        if (vehicleType.equals("scooter")) {
+            if (licensePlate.isEmpty()) {
+                model.addAttribute("message", "請輸入車牌號碼！");
+                updateAvailableSlots(model);
+                return "index";
+            }
+
+            if (scooterRepository.existsById(licensePlate)) {
+                model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已經停入車位");
+            } else {
+                long availableScooterSlots = ParkingLot.getTotalScooterSlots() - scooterRepository.count();
+                if (availableScooterSlots > 0) {
+                    Scooter scooter = new Scooter(licensePlate);
+                    scooterRepository.save(scooter);
+                    model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已停入車位");
+                } else {
+                    model.addAttribute("scooterMessage", "機車車位已滿！");
+                }
+            }
+            // Car
+        } else if (vehicleType.equals("car")) {
+            if (licensePlate.isEmpty()) {
+                model.addAttribute("carMessage", "請輸入車牌號碼！");
+                updateAvailableSlots(model);
+                return "index";
+            }
+
+            if (carRepository.existsById(licensePlate)) {
+                model.addAttribute("carMessage", "車輛 " + licensePlate + " 已經停入車位");
+            } else {
+                long availableCarSlots = ParkingLot.getTotalCarSlots() - carRepository.count();
+                if (availableCarSlots > 0) {
+                    Car car = new Car(licensePlate);
+                    carRepository.save(car);
+                    model.addAttribute("carMessage", "車輛 " + licensePlate + " 已停入車位");
+                } else {
+                    model.addAttribute("carMessage", "汽車車位已滿！");
+                }
             }
         }
-        updateAvailableSlots(model);
-        return "index";
-    }
 
-    @PostMapping("/car")
-    public String parkCar(@RequestParam String licensePlate, Model model) {
-        if (licensePlate.isEmpty()) {
-            model.addAttribute("carMessage", "請輸入車牌號碼！");
-            updateAvailableSlots(model);
-            return "index";
-        }
-
-        if (carRepository.existsById(licensePlate)) {
-            model.addAttribute("carMessage", "車輛 " + licensePlate + " 已經停入車位");
-        } else {
-            long availableCarSlots = ParkingLot.getTotalCarSlots() - carRepository.count();
-            if (availableCarSlots > 0) {
-                Car car = new Car(licensePlate);
-                carRepository.save(car);
-                model.addAttribute("carMessage", "車輛 " + licensePlate + " 已停入車位");
-            }else {
-                model.addAttribute("carMessage", "汽車車位已滿！");
-            }
-        }
         updateAvailableSlots(model);
         return "index";
     }
@@ -166,8 +173,18 @@ public class ParkingLotController {
         }
 
         if ("scooter".equals(vehicleType)) {
+            Scooter scooter = scooterRepository.findById(licensePlate).orElse(null);
+            if (scooter != null) {
+                scooter.setStatus(VehicleStatus.PAYMENT_COMPLETE);
+                scooterRepository.save(scooter);
+            }
             scooterRepository.deleteById(licensePlate);
         } else if ("car".equals(vehicleType)) {
+            Car car = carRepository.findById(licensePlate).orElse(null);
+            if (car != null) {
+                car.setStatus(VehicleStatus.PAYMENT_COMPLETE);
+                carRepository.save(car);
+            }
             carRepository.deleteById(licensePlate);
         }
         return ResponseEntity.ok(Map.of("message", "繳費成功"));
