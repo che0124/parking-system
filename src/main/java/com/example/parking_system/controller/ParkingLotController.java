@@ -45,12 +45,12 @@ public class ParkingLotController {
             return "index";
         }
         
-        Scooter scooter = new Scooter(licensePlate);
         if (scooterRepository.existsById(licensePlate)) {
             model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已經停入車位");
         } else {
             long availableScooterSlots = ParkingLot.getTotalScooterSlots() - scooterRepository.count();
             if (availableScooterSlots > 0) {
+                Scooter scooter = new Scooter(licensePlate);
                 scooterRepository.save(scooter);
                 model.addAttribute("scooterMessage", "車輛 " + licensePlate + " 已停入車位");
             }else {
@@ -69,12 +69,12 @@ public class ParkingLotController {
             return "index";
         }
 
-        Car car = new Car(licensePlate);
         if (carRepository.existsById(licensePlate)) {
             model.addAttribute("carMessage", "車輛 " + licensePlate + " 已經停入車位");
         } else {
             long availableCarSlots = ParkingLot.getTotalCarSlots() - carRepository.count();
             if (availableCarSlots > 0) {
+                Car car = new Car(licensePlate);
                 carRepository.save(car);
                 model.addAttribute("carMessage", "車輛 " + licensePlate + " 已停入車位");
             }else {
