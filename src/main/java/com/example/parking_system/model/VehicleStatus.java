@@ -1,6 +1,6 @@
 package com.example.parking_system.model;
 
 public enum VehicleStatus {
-    ENTRYED,
+    ENTERED,
     PAYMENT_COMPLETE
 }
